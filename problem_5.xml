@@ -1,0 +1,103 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+
+<simulation name="problem 4c" type="fixed source">
+  <histories start="1" end="100000000" />
+</simulation>
+
+<distributions>
+  <delta            name="pos dist" datatype="point" x = "1.5" y = "1.5" z = "0.0"  />
+  <isotropic        name="dir dist" datatype="point" />
+  <uniform          name="isotropic scatter" datatype="double" a="-1.0" b="1.0" />
+</distributions>
+
+<nuclides>
+  <nuclide name="nucA"> 
+    <capture xs="10.0"/>
+    <scatter xs="10.0" distribution="isotropic scatter"/>
+  </nuclide>
+  <nuclide name="nucB"> 
+    <capture xs="100.0"/>
+  </nuclide>
+  <nuclide name="nucdet"> 
+    <capture xs="59.0"/>
+    <scatter xs="1.0" distribution="isotropic scatter"/>
+  </nuclide>
+</nuclides>
+
+<materials>
+  <material name="matA" density="0.1">
+    <nuclide name="nucA" frac="1.0"/>
+  </material>
+  <material name="matB" density="0.1">
+    <nuclide name="nucB" frac="1.0"/>
+  </material>
+  <material name="matdet" density="0.005">
+    <nuclide name="nucdet" frac="1.0"/>
+  </material>
+</materials>
+
+<surfaces>
+  <cylinderz name="detectorSurface" x0="6.5" y0="1.5" rad="0.5"/>
+  <plane name="pxleft" a="1.0" b="0.0" c="0.0" d="0.0"/>
+  <plane name="pxright" a="1.0" b="0.0" c="0.0" d="9.0"/>
+  <plane name="pytop" a="0.0" b="1.0" c="0.0" d="6.0"/>
+  <plane name="pybottom" a="0.0" b="1.0" c="0.0" d="0.0"/>
+  <plane name="pxBleft" a="1.0" b="0.0" c="0.0" d="4.0"/>
+  <plane name="pxBright" a="1.0" b="0.0" c="0.0" d="5.0"/>
+  <plane name="pyBtop" a="0.0" b="1.0" c="0.0" d="3.0"/>
+</surfaces>
+
+<cells>
+  <cell name="filler A1" material="matA" importance="1.0">
+    <surface name="pxleft" sense="+1"/>
+    <surface name="pxBleft" sense="-1"/>
+    <surface name="pytop" sense="-1"/>
+    <surface name="pybottom" sense="+1"/>
+  </cell>
+  <cell name="filler A2" material="matA" importance="10.0">
+    <surface name="pxBleft" sense="+1"/>
+    <surface name="pxBright" sense="-1"/>
+    <surface name="pytop" sense="-1"/>
+    <surface name="pybottom" sense="+1"/>
+  </cell>
+  <cell name="filler A3" material="matA" importance="100.0">
+    <surface name="pxBright" sense="+1"/>
+    <surface name="pxright" sense="-1"/>
+    <surface name="pytop" sense="-1"/>
+    <surface name="pybottom" sense="+1"/>
+    <surface name="detectorSurface" sense="+1"/>
+  </cell>
+  <cell name="block B" material="matB" importance="0.1">
+    <surface name="pxBleft" sense="+1"/>
+    <surface name="pxBright" sense="-1"/>
+    <surface name="pyBtop" sense="-1"/>
+    <surface name="pybottom" sense="+1"/>
+  </cell>
+  <cell name="detector" material="matdet" importance="100.0">
+    <surface name="detectorSurface" sense="-1"/>
+  </cell>
+  <cell name="left outside" importance="0.0">
+    <surface name="pxleft" sense="-1"/>
+  </cell>
+  <cell name="right outside" importance="0.0">
+    <surface name="pxright" sense="+1"/>
+  </cell>
+  <cell name="top outside" importance="0.0">
+    <surface name="pytop" sense="+1"/>
+  </cell>
+  <cell name="bottom outside" importance="0.0">
+    <surface name="pybottom" sense="-1"/>
+  </cell>
+</cells>
+
+<estimators>
+  <trackLength name="track length">
+    <cell name="detector"/>
+  </trackLength>
+  <track name="measure of time"/>
+</estimators>
+
+<source>
+  <position  distribution="pos dist"/>
+  <direction distribution="dir dist"/>
+</source>

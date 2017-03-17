@@ -1,0 +1,86 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+
+<simulation name="problem 4b" type="fixed source">
+  <histories start="1" end="100000000" />
+</simulation>
+
+<distributions>
+  <independentXYZ   name="pos dist" datatype="point" x = "uniform x" y = "uniform y" z = "uniform z" />
+  <uniform          name="uniform x" datatype="double" a="-2.0" b="2.0" />
+  <uniform          name="uniform y" datatype="double" a="-2.0" b="2.0" />
+  <uniform          name="uniform z" datatype="double" a="-2.0" b="2.0" />
+  <isotropic        name="dir dist" datatype="point" />
+  <uniform          name="isotropic scatter" datatype="double" a="-1.0" b="1.0" />
+  <linear           name="anisotropic scatter" datatype="double" a="-1.0" b="1.0" fa="0.5" fb="1.5" />
+</distributions>
+
+<nuclides>
+  <nuclide name="nuc1"> 
+    <capture xs="1.0"/>
+    <scatter xs="19.0" distribution="anisotropic scatter"/>
+  </nuclide>
+  <nuclide name="nuc2"> 
+    <capture xs="1.0"/>
+    <scatter xs="4.0" distribution="isotropic scatter"/>
+  </nuclide>
+  <nuclide name="nucdet"> 
+    <capture xs="59.0"/>
+    <scatter xs="1.0" distribution="isotropic scatter"/>
+  </nuclide>
+</nuclides>
+
+<materials>
+  <material name="mat1" density="0.1">
+    <nuclide name="nuc1" frac="0.66667"/>
+    <nuclide name="nuc2" frac="0.33333"/>
+  </material>
+  <material name="matdet" density="0.005">
+    <nuclide name="nucdet" frac="1.0"/>
+  </material>
+</materials>
+
+<surfaces>
+  <sphere name="ballSurface" x0="0.0" y0="0.0" z0="0.0" rad="4.0"/>
+  <cylinderx name="detectorSurface" y0="0.0" z0="0.0" rad="0.5"/>
+  <plane name="pxleft" a="1.0" b="0.0" c="0.0" d="-5.0"/>
+  <plane name="pxleftdet" a="1.0" b="0.0" c="0.0" d="14.0"/>
+  <plane name="pxright" a="1.0" b="0.0" c="0.0" d="19.0"/>
+</surfaces>
+
+<cells>
+  <cell name="ball" material="mat1">
+    <surface name="ballSurface" sense="-1"/>
+  </cell>
+  <cell name="detector" material="matdet">
+    <surface name="detectorSurface" sense="-1"/>
+    <surface name="pxleftdet" sense="+1"/>
+    <surface name="pxright" sense="-1"/>
+  </cell>
+  <cell name="air1">
+    <surface name="ballSurface" sense="+1"/>
+    <surface name="pxleft" sense="+1"/>
+    <surface name="pxleftdet" sense="-1"/>
+  </cell>
+  <cell name="air2">
+    <surface name="detectorSurface" sense="+1"/>
+    <surface name="pxleftdet" sense="+1"/>
+    <surface name="pxright" sense="-1"/>
+  </cell>
+  <cell name="left outside" importance="0.0">
+    <surface name="pxleft" sense="-1"/>
+  </cell>
+  <cell name="right outside" importance="0.0">
+    <surface name="pxright" sense="+1"/>
+  </cell>
+</cells>
+
+<estimators>
+  <trackLength name="track length">
+    <cell name="detector"/>
+  </trackLength>
+</estimators>
+
+<source>
+  <position  distribution="pos dist"/>
+  <direction distribution="dir dist"/>
+</source>
